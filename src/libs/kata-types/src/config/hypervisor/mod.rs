@@ -53,6 +53,11 @@ const VIRTIO_FS: &str = "virtio-fs";
 const VIRTIO_FS_INLINE: &str = "inline-virtio-fs";
 const MAX_BRIDGE_SIZE: u32 = 5;
 
+/// use transparent huge page as VM RAM's backend
+pub const HUGE_PAGE_MODE_THP: &str = "thp";
+/// use hugetlbfs as VM RAM's backend
+pub const HUGE_PAGE_MODE_HUGETLBFS: &str = "hugetlbfs";
+
 const KERNEL_PARAM_DELIMITER: &str = " ";
 
 lazy_static! {
@@ -551,13 +556,15 @@ pub struct MemoryInfo {
     #[serde(default)]
     pub enable_mem_prealloc: bool,
 
-    /// Enable huge pages for VM RAM, default false
+    /// Huge pages support for VM RAM.
     ///
-    /// Enabling this will result in the VM memory being allocated using huge pages. This is useful
-    /// when you want to use vhost-user network stacks within the container. This will automatically
-    /// result in memory pre allocation.
+    /// The default is an Empty String which will disable this feature. The hugepage backend:
+    /// - hugetlbfs: This will result in the VM memory being allocated using hugetlbfs backend.
+    /// - thp: This will result in the VM memory being allocated using transprant huge page backend.
+    /// This is useful when you want to use vhost-user network stacks within the container.
+    /// This will automatically result in memory pre allocation.
     #[serde(default)]
-    pub enable_hugepages: bool,
+    pub hugepages: String,
 
     /// Specifies virtio-mem will be enabled or not.
     ///
